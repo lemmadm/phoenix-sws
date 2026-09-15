@@ -9,6 +9,8 @@
     "dev": "tsx server.ts",
     "build": "vite build && esbuild server.ts --bundle --platform=node --format=cjs --packages=external --sourcemap --outfile=dist/server.cjs",
     "start": "node dist/server.cjs",
+    "postinstall": "if [ ! -f dist/server.cjs ]; then npm run build; fi",
+    "render-build": "bun install && bun run build",
     "vercel-build": "npm run build",
     "clean": "rm -rf dist server.js",
     "lint": "tsc --noEmit"
