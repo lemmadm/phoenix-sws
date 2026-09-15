@@ -10,8 +10,8 @@ export const AdminAuthGuard: React.FC<AdminAuthGuardProps> = ({
   onAuthenticated,
   onCancelToAudience
 }) => {
-  const [email, setEmail] = useState('moderator@phoenix.sws');
-  const [password, setPassword] = useState('admin123');
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
 
@@ -26,12 +26,19 @@ export const AdminAuthGuard: React.FC<AdminAuthGuardProps> = ({
     setErrorMsg(null);
 
     setTimeout(() => {
-      // Allow moderator authentication (standard event credentials)
-      if (email.trim().length > 3 && password.trim().length >= 4) {
+      const expectedEmail = (import.meta as any).env?.VITE_ADMIN_EMAIL || (typeof process !== 'undefined' ? (process.env as any).ADMIN_EMAIL : '') || '';
+      const expectedPassword = (import.meta as any).env?.VITE_ADMIN_PASSWORD || (typeof process !== 'undefined' ? (process.env as any).ADMIN_PASSWORD : '') || '';
+      // If env not set, fallback to allow any valid email/password (for local dev without env)
+      const isEnvConfigured = expectedEmail && expectedPassword;
+      const isValid = isEnvConfigured
+        ? email.trim() === expectedEmail && password.trim() === expectedPassword
+        : email.trim().length > 3 && password.trim().length >= 4;
+
+      if (isValid) {
         sessionStorage.setItem('phoenix_admin_auth', email.trim());
         onAuthenticated(email.trim());
       } else {
-        setErrorMsg('Invalid moderator credentials. Password must be at least 4 characters.');
+        setErrorMsg(isEnvConfigured ? 'Invalid moderator credentials.' : 'Invalid moderator credentials. Password must be at least 4 characters.');
       }
       setLoading(false);
     }, 400);
@@ -60,14 +67,10 @@ export const AdminAuthGuard: React.FC<AdminAuthGuardProps> = ({
           </p>
         </div>
 
-        {/* Demo Credentials hint */}
-        <div className="mb-4 p-3 rounded-xl bg-blue-950/60 border border-blue-800/60 text-blue-200 text-xs flex items-center justify-between">
-          <div className="flex items-center gap-2">
-            <Sparkles className="w-4 h-4 text-red-400 shrink-0" />
-            <span>
-              Moderator login: <strong>moderator@phoenix.sws</strong> / <strong>admin123</strong>
-            </span>
-          </div>
+        {/* Credentials hint — no defaults exposed, configured via env */}
+        <div className="mb-4 p-3 rounded-xl bg-blue-950/60 border border-blue-800/60 text-blue-200 text-xs flex items-center gap-2">
+          <Sparkles className="w-4 h-4 text-red-400 shrink-0" />
+          <span>Enter the moderator credentials configured in your environment variables.</span>
         </div>
 
         {/* Form */}
