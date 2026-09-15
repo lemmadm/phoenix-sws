@@ -1,0 +1,6 @@
+{
+  "name": "Phoenix SWS",
+  "description": "Real-time audience interactive survey & stage presentation platform powered by Phoenix SWS with instant audience voting, projector screen, and moderator console.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
