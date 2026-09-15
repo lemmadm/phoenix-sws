@@ -1,0 +1,22 @@
+services:
+  - type: web
+    name: phoenix-sws-api
+    env: node
+    plan: free # change to starter ($7/mo) for no sleep
+    buildCommand: bun install && bun run build
+    # If you use npm: npm install && npm run build
+    startCommand: bun run start
+    # If you use npm: npm start  -> node dist/server.cjs
+    envVars:
+      - key: NODE_VERSION
+        value: 20.18.0
+      - key: BUN_VERSION
+        value: 1.4.2
+      - key: DATABASE_URL
+        sync: false # set in Render dashboard → Environment
+      - key: FRONTEND_URL
+        value: https://phoenix-sws.neka.ng
+      - key: PORT
+        value: 10000 # Render sets PORT=10000, server.ts uses process.env.PORT
+    healthCheckPath: /api/health
+    autoDeploy: true
